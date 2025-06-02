@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<StackPane fx:id="cardContainer" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.appfutbol.Controllers.FlipLogin" stylesheets="@CSS/Styles.css">
+    <VBox alignment="TOP_CENTER" spacing="20" >
+        <CheckBox fx:id="flipToggle" text="Flip to Sign Up" lineSpacing="20"/>
+
+        <StackPane fx:id="cardStack" maxWidth="-Infinity" maxHeight="-Infinity" alignment="CENTER">
+
+            <!-- FRONT: Log In -->
+            <VBox fx:id="loginCard" alignment="CENTER" spacing="10" styleClass="card" prefHeight="300" prefWidth="200">
+                <Label text="Log in" styleClass="title" />
+                <TextField fx:id="loginEmail" promptText="Email" />
+                <PasswordField fx:id="loginPassword" promptText="Password" />
+                <Button fx:id="loginButton" text="Let's go!" onAction="#onLoginButtonClick" />
+            </VBox>
+
+            <!-- BACK: Sign Up -->
+            <VBox fx:id="signupCard" alignment="CENTER" spacing="10" styleClass="card" visible="false" prefHeight="300" prefWidth="200">
+                <Label text="Sign up" styleClass="title" />
+                <TextField fx:id="signName" promptText="Name" />
+                <TextField fx:id="signMail" promptText="Email" />
+                <PasswordField fx:id="signPassword" promptText="Password" />
+                <Button fx:id="signButton" text="Confirm!" onAction="#onSignupButtonClick" />
+            </VBox>
+        </StackPane>
+    </VBox>
+</StackPane>

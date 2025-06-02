@@ -1,6 +1,6 @@
 package com.example.appfutbol.scraper;
 
-import com.example.appfutbol.strategy.ScrapingStrategy;
+import com.example.appfutbol.Utils.ScrapingStrategy;
 
 public class TabPosicionScraper implements Scraper {
     private ScrapingStrategy strategy;

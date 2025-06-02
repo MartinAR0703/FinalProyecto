@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.appfutbol.Controllers.serieAController"
+            prefHeight="800.0" prefWidth="600.0"
+            stylesheets="@../CSS/Styles.css" styleClass="background">
+    <top>
+        <BorderPane styleClass="border_pane">
+            <left>
+                <Button fx:id="btnHome" text="home" styleClass="button_home" onAction="#btnHomeClick"/>
+            </left>
+            <center>
+                <Label fx:id="lblLiga" text="Serie A" styleClass="lbl_title" />
+            </center>
+        </BorderPane>
+
+    </top>
+    <center>
+        <HBox spacing="30" alignment="CENTER">
+            <VBox spacing="10">
+                <Label text="Tabla de posiciones" styleClass="lbl_title"/>
+                <TableView fx:id="tablaPosiciones">
+                    <columns>
+                        <TableColumn fx:id="colNombre" text="Equipo" prefWidth="200"/>
+                        <TableColumn fx:id="colGanados" text="G" prefWidth="200"/>
+                        <TableColumn fx:id="colEmpates" text="E" prefWidth="200"/>
+                        <TableColumn fx:id="colPerdidos" text="P" prefWidth="200"/>
+                        <TableColumn fx:id="colPuntos" text="Pts." prefWidth="200"/>
+                    </columns>
+                </TableView>
+            </VBox>
+            <VBox spacing="10">
+                <Label text="Siguientes Partidos" styleClass="lbl_title"/>
+                <TableView fx:id="siguientesPartidos">
+                    <columns>
+                        <TableColumn fx:id="colLocal" text="Local" prefWidth="200"/>
+                        <TableColumn fx:id="colVisitante" text="Visitante" prefWidth="200"/>
+                        <TableColumn fx:id="colFecha" text="Fecha" prefWidth="200"/>
+                    </columns>
+                </TableView>
+            </VBox>
+            <VBox spacing="10">
+                <Label text="Tabla de jugadores" styleClass="lbl_title"/>
+                <TableView fx:id="tablaJugadores">
+                    <columns>
+                        <TableColumn fx:id="colNombreJugador" text="Jugador" prefWidth="200"/>
+                        <TableColumn fx:id="colGoles" text="Goles" prefWidth="200"/>
+                        <TableColumn fx:id="colPartidos" text="PJ" prefWidth="200"/>
+                        <TableColumn fx:id="colEquipo" text="Equipo" prefWidth="200"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+
+        </HBox>
+    </center>
+
+</BorderPane>

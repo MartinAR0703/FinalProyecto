@@ -29,7 +29,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'com.example.appfutbol'
-    mainClass = 'com.example.appfutbol.HelloApplication'
+    mainClass = 'com.example.appfutbol.DeportivApplication'
 }
 
 javafx {
@@ -40,6 +40,12 @@ javafx {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation "org.openjfx:javafx-controls:20.0.2:${javafx.platform.classifier}"
+    implementation "org.openjfx:javafx-fxml:20.0.2:${javafx.platform.classifier}"
+    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '9.0.0'
+    implementation 'org.jsoup:jsoup:1.17.2'
 }
 
 test {
