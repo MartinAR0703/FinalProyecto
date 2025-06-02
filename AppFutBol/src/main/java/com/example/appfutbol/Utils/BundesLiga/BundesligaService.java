@@ -12,10 +12,22 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servicio para obtener los partidos de la Bundesliga mediante la API de football-data.org.
+ *
+ * @author MartinAR
+ */
 public class BundesligaService {
 
     private static final String API_KEY = "02da04d0eb99411c9e723271cef049e5";
 
+    /**
+     * Obtiene la lista de partidos de la Bundesliga para una temporada específica.
+     *
+     * @param temporada Año de la temporada para obtener los partidos.
+     * @return Lista de objetos partido con información de equipos y fecha.
+     * @throws Exception si ocurre un error en la conexión o en el parseo de la respuesta.
+     */
     public static List<partido> obtenerPartidosBundesliga(int temporada) throws Exception {
         String url = "https://api.football-data.org/v4/competitions/BL1/matches?season=" + temporada;
 

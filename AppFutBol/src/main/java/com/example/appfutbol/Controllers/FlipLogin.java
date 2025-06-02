@@ -6,20 +6,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import com.example.appfutbol.db.UserDao;
 import com.example.appfutbol.models.usuario;
-import javafx.scene.control.Alert;
-
 
 import java.io.IOException;
-import java.util.Optional;
 
+/**
+ * Controlador para la vista de login y registro (FlipLogin).
+ * Permite al usuario iniciar sesión o registrarse, alternando entre vistas con un interruptor visual (flipToggle).
+ * Gestiona las interacciones con la base de datos usando {@link UserDao}.
+ *
+ * <p>Autor: MartinAR</p>
+ */
 public class FlipLogin {
 
     @FXML private CheckBox flipToggle;
@@ -33,9 +34,12 @@ public class FlipLogin {
     @FXML private TextField signMail;
     @FXML private PasswordField signPassword;
 
+    /**
+     * Método que se ejecuta automáticamente al cargar la vista.
+     * Configura el comportamiento del {@code flipToggle} para alternar entre las vistas de login y registro.
+     */
     @FXML
     public void initialize() {
-        // Mostrar login por defecto
         loginCard.setVisible(true);
         loginCard.setManaged(true);
         signupCard.setVisible(false);
@@ -44,12 +48,19 @@ public class FlipLogin {
         flipToggle.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
             loginCard.setVisible(!isSelected);
             loginCard.setManaged(!isSelected);
-
             signupCard.setVisible(isSelected);
             signupCard.setManaged(isSelected);
         });
     }
 
+    /**
+     * Maneja el evento de clic en el botón de login.
+     * Verifica las credenciales ingresadas por el usuario contra la base de datos.
+     * Si son válidas, redirige a la pantalla principal (home.fxml).
+     *
+     * @param event Evento que representa el clic del botón
+     * @throws IOException si ocurre un error al cargar la siguiente vista
+     */
     @FXML
     public void onLoginButtonClick(ActionEvent event) throws IOException {
         String email = loginEmail.getText();
@@ -59,7 +70,6 @@ public class FlipLogin {
         boolean coincide = dao.login(email, password);
 
         if (coincide) {
-            // Ir a la vista principal
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/com/example/appfutbol/Views/home.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -71,8 +81,15 @@ public class FlipLogin {
         } else {
             showAlert("Error", "Correo o contraseña incorrectos.");
         }
-
     }
+
+    /**
+     * Maneja el evento de clic en el botón de registro.
+     * Valida los campos de entrada y registra al nuevo usuario si todos los datos son válidos.
+     *
+     * @param event Evento que representa el clic del botón
+     * @throws IOException si ocurre un error inesperado
+     */
     @FXML
     public void onSignupButtonClick(ActionEvent event) throws IOException {
         String name = signName.getText();
@@ -88,17 +105,23 @@ public class FlipLogin {
         usuario nuevo = new usuario();
         nuevo.setNombre(name);
         nuevo.setCorreo(email);
-        nuevo.setPassword(dao.sha1(password)); // usa el método del DAO
-        // puedes guardar el nombre también si lo agregas al modelo y la tabla
+        nuevo.setPassword(dao.sha1(password)); // Encriptación con SHA-1
 
         boolean guardado = dao.save(nuevo);
         if (guardado) {
             showAlert("Éxito", "Usuario registrado correctamente.");
-            flipToggle.setSelected(false); // Regresa a login
+            flipToggle.setSelected(false); // Volver al login
         } else {
             showAlert("Error", "No se pudo registrar el usuario.");
         }
     }
+
+    /**
+     * Muestra un mensaje emergente al usuario con el contenido especificado.
+     *
+     * @param title   Título del mensaje
+     * @param message Contenido del mensaje
+     */
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -106,5 +129,4 @@ public class FlipLogin {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }

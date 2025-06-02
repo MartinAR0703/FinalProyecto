@@ -3,17 +3,22 @@ package com.example.appfutbol.db;
 import com.example.appfutbol.models.usuario;
 
 import java.security.MessageDigest;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación de DAO para la entidad Usuario.
+ * Proporciona operaciones CRUD y autenticación.
+ *
+ * <p>Autor: MartinAR</p>
+ */
 public class UserDao extends MySQLConnection implements Dao<usuario> {
 
     @Override
     public Optional<usuario> findById(int id) {
-        String query = "SELECT * FROM usuarios WHERE id = ?";
+        String query = "SELECT * FROM usuario WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -25,10 +30,11 @@ public class UserDao extends MySQLConnection implements Dao<usuario> {
                 user.setId_usuario(rs.getInt("id_usuario"));
                 user.setNombre(rs.getString("nombre"));
                 user.setPassword(rs.getString("contraseña"));
+                user.setCorreo(rs.getString("correo"));
                 return Optional.of(user);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -37,8 +43,27 @@ public class UserDao extends MySQLConnection implements Dao<usuario> {
 
     @Override
     public List<usuario> findAll() {
-        // Implementación opcional
-        return List.of(); // vacía por ahora
+        String query = "SELECT * FROM usuario";
+        List<usuario> usuarios = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                usuario user = new usuario();
+                user.setId_usuario(rs.getInt("id_usuario"));
+                user.setNombre(rs.getString("nombre"));
+                user.setPassword(rs.getString("contraseña"));
+                user.setCorreo(rs.getString("correo"));
+                usuarios.add(user);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return usuarios;
     }
 
     @Override
@@ -48,11 +73,12 @@ public class UserDao extends MySQLConnection implements Dao<usuario> {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, record.getNombre());
-            stmt.setString(2, record.getPassword());
+            stmt.setString(2, sha1(record.getPassword()));
             stmt.setString(3, record.getCorreo());
+
             return stmt.executeUpdate() > 0;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -61,16 +87,18 @@ public class UserDao extends MySQLConnection implements Dao<usuario> {
 
     @Override
     public boolean update(usuario record) {
-        String query = "UPDATE usuario SET username = ?, password_hash = ? WHERE id = ?";
+        String query = "UPDATE usuario SET nombre = ?, contraseña = ?, correo = ? WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, record.getNombre());
-            stmt.setString(2, record.getPassword());
-            stmt.setInt(3, record.getId_usuario());
+            stmt.setString(2, sha1(record.getPassword()));
+            stmt.setString(3, record.getCorreo());
+            stmt.setInt(4, record.getId_usuario());
+
             return stmt.executeUpdate() > 0;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -79,54 +107,64 @@ public class UserDao extends MySQLConnection implements Dao<usuario> {
 
     @Override
     public boolean delete(int id) {
-        String query = "DELETE FROM usuario WHERE id = ?";
+        String query = "DELETE FROM usuario WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return false;
     }
 
-    // ✅ Método login
+    /**
+     * Verifica las credenciales de un usuario.
+     *
+     * @param correo correo electrónico del usuario.
+     * @param plainPassword contraseña sin encriptar.
+     * @return true si las credenciales son válidas, false en caso contrario.
+     */
     public boolean login(String correo, String plainPassword) {
-        String query = "SELECT * FROM usuario WHERE correo = ?";
+        String query = "SELECT contraseña FROM usuario WHERE correo = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, correo);
             ResultSet rs = stmt.executeQuery();
-            System.out.println(rs.toString());
+
             if (rs.next()) {
                 String storedHash = rs.getString("contraseña");
                 String inputHash = sha1(plainPassword);
-
-                if (storedHash.equalsIgnoreCase(inputHash)) {
-                    return true;
-                }
+                return storedHash.equalsIgnoreCase(inputHash);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return false;
     }
 
-    // 🔐 Utilidad para cifrar contraseñas SHA-1
+    /**
+     * Encripta una cadena usando el algoritmo SHA-1.
+     *
+     * @param input texto plano a cifrar.
+     * @return hash en formato hexadecimal.
+     */
     public String sha1(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] bytes = md.digest(input.getBytes());
             StringBuilder sb = new StringBuilder();
+
             for (byte b : bytes) {
                 sb.append(String.format("%02x", b));
             }
+
             return sb.toString();
         } catch (Exception e) {
             throw new RuntimeException("Error generando hash SHA-1", e);
